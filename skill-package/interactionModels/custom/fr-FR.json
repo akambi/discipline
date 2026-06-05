@@ -1,0 +1,29 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "bilan immo",
+            "intents": [
+                {"name":"PrenomIntent","slots":[{"name":"prenom","type":"AMAZON.SearchQuery"}],"samples":["je m'appelle {prenom}","mon prénom c'est {prenom}","c'est {prenom}","appelle moi {prenom}","mon prénom est {prenom}","je suis {prenom}"]},
+                {"name":"ObjectifIntent","slots":[{"name":"typeBien","type":"TYPE_BIEN"}],"samples":["{typeBien}","je veux acheter {typeBien}","mon objectif est {typeBien}","j'aimerais acheter {typeBien}","un {typeBien}","une {typeBien}","acheter {typeBien}","je vise {typeBien}","je veux un {typeBien}","je veux une {typeBien}","j'aimerais un {typeBien}","j'aimerais une {typeBien}"]},
+                {"name":"NombreIntent","slots":[{"name":"nombre","type":"AMAZON.NUMBER"}],"samples":["{nombre}","{nombre} dollars","c'est {nombre}","environ {nombre}","à peu près {nombre}","autour de {nombre}","il y a {nombre}","j'ai {nombre}","ça fait {nombre}","le montant est {nombre}","mon score est {nombre}","c'est {nombre} dollars"]},
+                {"name":"PasserIntent","samples":["passe","je sais pas","je ne sais pas","pas sûr","je n'ai pas l'info","sans réponse","aucune idée","skip","suivant","question suivante","je n'ai pas le chiffre","je ne me souviens plus"]},
+                {"name":"AMAZON.YesIntent","samples":["oui","yes","ouais","bien sûr","absolument","tout à fait","c'est fait","affirmatif","ok","exact","correct","oui c'est fait","oui bien sûr","oui c'est ça","oui j'ai fait","oui je l'ai fait"]},
+                {"name":"AMAZON.NoIntent","samples":["non","no","pas vraiment","pas encore","négatif","nan","nope","pas du tout","non pas encore","je n'ai pas","non je n'ai pas","pas fait","non pas fait"]},
+                {"name":"AMAZON.HelpIntent","samples":["aide","aide moi","help","je ne comprends pas","répète la question","quelle est la question"]},
+                {"name":"AMAZON.CancelIntent","samples":["annuler","stop","arrête","quitter","j'arrête"]},
+                {"name":"AMAZON.StopIntent","samples":["arrête","stop","quitter","fin","terminer"]},
+                {"name":"AMAZON.FallbackIntent","samples":[]},
+                {"name":"AMAZON.NavigateHomeIntent","samples":[]}
+            ],
+            "types":[{"name":"TYPE_BIEN","values":[
+                {"name":{"value":"duplex","synonyms":["deux logements","bi-génération"]}},
+                {"name":{"value":"triplex","synonyms":["trois logements"]}},
+                {"name":{"value":"quadruplex","synonyms":["quatre logements","quadplex"]}},
+                {"name":{"value":"plex","synonyms":["multiplex","multilogement","immeuble"]}},
+                {"name":{"value":"condo","synonyms":["condominium","copropriété"]}},
+                {"name":{"value":"maison","synonyms":["maison unifamiliale","unifamiliale","maison individuelle"]}},
+                {"name":{"value":"appartement","synonyms":["appart","logement"]}}
+            ]}]
+        }
+    }
+}

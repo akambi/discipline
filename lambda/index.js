@@ -16,6 +16,7 @@ const https  = require('https');
 const urlMod = require('url');
 const { DynamoDBClient }     = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, GetCommand, PutCommand } = require('@aws-sdk/lib-dynamodb');
+const { LireSignauxIntentHandler } = require('../lambdas/alexa/intents/LireSignauxIntent');
 
 // ──────────────────────────────────────────────
 //  ⚙️  CONFIG
@@ -704,6 +705,7 @@ exports.handler = Alexa.SkillBuilders.custom()
   .addRequestHandlers(
     LaunchRequestHandler,
     ObjectifIntentHandler,
+    LireSignauxIntentHandler,
     OuiNonIntentHandler,
     NombreIntentHandler,
     PasserIntentHandler,

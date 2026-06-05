@@ -1,0 +1,10 @@
+{
+  "name": "discipline-pilotage-soir",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.52.0",
+    "@aws-sdk/client-dynamodb": "^3.0.0",
+    "@aws-sdk/lib-dynamodb": "^3.0.0"
+  }
+}

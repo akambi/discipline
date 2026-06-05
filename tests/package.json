@@ -1,0 +1,15 @@
+{
+  "name": "discipline-tests",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "jest --testEnvironment node"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0"
+  },
+  "jest": {
+    "testMatch": ["**/*.test.js"],
+    "testEnvironment": "node"
+  }
+}

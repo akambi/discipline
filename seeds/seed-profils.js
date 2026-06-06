@@ -8,7 +8,7 @@ const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({ region: REGION }));
 
 const PROFILS_AKA = [
   {
-    userId:              'aka',
+    userId:              'akambi',
     profilId:            'achat_maison',
     type:                'financier',
     objectifEmotionnel:  'Acheter une maison cette année',
@@ -24,7 +24,7 @@ const PROFILS_AKA = [
     createdAt: new Date().toISOString(),
   },
   {
-    userId:              'aka',
+    userId:              'akambi',
     profilId:            'ca_reussir_etranger',
     type:                'pro',
     objectifEmotionnel:  'Développer Réussir à l\'Étranger comme source de revenu principale',
@@ -39,7 +39,7 @@ const PROFILS_AKA = [
   },
 ];
 
-async function seed(userId = 'aka') {
+async function seed(userId = 'akambi') {
   const profilsToSeed = PROFILS_AKA.filter(p => p.userId === userId);
 
   if (profilsToSeed.length === 0) {
@@ -75,7 +75,7 @@ async function seed(userId = 'aka') {
 if (require.main === module) {
   const args        = process.argv.slice(2);
   const userIdArg   = args.find(a => a.startsWith('--userId='));
-  const userId      = userIdArg ? userIdArg.split('=')[1] : 'aka';
+  const userId      = userIdArg ? userIdArg.split('=')[1] : 'akambi';
 
   seed(userId).catch(e => { console.error('Seed failed:', e.message); process.exit(1); });
 }

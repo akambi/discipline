@@ -1,0 +1,15 @@
+{
+  "name": "dynamo",
+  "version": "1.0.0",
+  "main": "schema.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1063.0"
+  }
+}

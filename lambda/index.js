@@ -16,7 +16,9 @@ const https  = require('https');
 const urlMod = require('url');
 const { DynamoDBClient }     = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, GetCommand, PutCommand } = require('@aws-sdk/lib-dynamodb');
-const { LireSignauxIntentHandler } = require('../lambdas/alexa/intents/LireSignauxIntent');
+const { LireSignauxIntentHandler }                                                              = require('../lambdas/alexa/intents/LireSignauxIntent');
+const { AnnoncerSignalRougeIntentHandler }                                                      = require('../lambdas/alexa/intents/AnnoncerSignalRougeIntent');
+const { CheckSignalRougeIntentHandler, CheckSignalRougeOuiHandler, CheckSignalRougeNonHandler } = require('../lambdas/alexa/intents/CheckSignalRougeIntent');
 
 // ──────────────────────────────────────────────
 //  ⚙️  CONFIG
@@ -706,6 +708,10 @@ exports.handler = Alexa.SkillBuilders.custom()
     LaunchRequestHandler,
     ObjectifIntentHandler,
     LireSignauxIntentHandler,
+    AnnoncerSignalRougeIntentHandler,
+    CheckSignalRougeIntentHandler,
+    CheckSignalRougeOuiHandler,
+    CheckSignalRougeNonHandler,
     OuiNonIntentHandler,
     NombreIntentHandler,
     PasserIntentHandler,

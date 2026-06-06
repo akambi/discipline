@@ -8,23 +8,15 @@ const TIMEZONE_OFFSET = parseInt(process.env.TIMEZONE_OFFSET || '-4', 10);
 
 const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({ region: REGION }));
 
-const SIGNAL_LABELS = {
-  critique:    'rouge',
-  important:   'orange',
-  opportunite: 'vert',
-};
-
-const ORDINALS = ['Premier', 'Deuxième', 'Troisième'];
-
 function getLocalDate() {
   const local = new Date(Date.now() + TIMEZONE_OFFSET * 3600 * 1000);
   return local.toISOString().slice(0, 10);
 }
 
-const LireSignauxIntentHandler = {
+const AnnoncerSignalRougeIntentHandler = {
   canHandle(h) {
     return Alexa.getRequestType(h.requestEnvelope) === 'IntentRequest'
-      && Alexa.getIntentName(h.requestEnvelope) === 'LireSignauxIntent';
+      && Alexa.getIntentName(h.requestEnvelope) === 'AnnoncerSignalRougeIntent';
   },
 
   async handle(h) {
@@ -39,26 +31,23 @@ const LireSignauxIntentHandler = {
 
       if (!result.Item?.signaux?.length) {
         return h.responseBuilder
-          .speak("Je n'ai pas encore calculé tes signaux pour aujourd'hui. Ils seront prêts après 20 heures.")
+          .speak("Pas de signaux disponibles pour aujourd'hui.")
           .getResponse();
       }
 
       const signaux = result.Item.signaux;
-      let speech = 'Voici tes trois signaux. ';
-      signaux.forEach((s, i) => {
-        const num    = ORDINALS[i] || `Signal ${i + 1}`;
-        const couleur = SIGNAL_LABELS[s.signal] || s.signal;
-        speech += `${num} signal ${couleur} : ${s.content}. `;
-      });
+      const rouge   = signaux.find(s => s.signal === 'critique') || signaux[0];
+
+      const speech = `Ton signal rouge aujourd'hui : ${rouge.content}. C'est ta priorité absolue pour le bloc deep work.`;
 
       return h.responseBuilder.speak(speech).getResponse();
     } catch (e) {
-      console.error('LireSignauxIntent error:', e);
+      console.error('AnnoncerSignalRougeIntent error:', e);
       return h.responseBuilder
-        .speak("Je n'ai pas pu récupérer tes signaux. Réessaie dans quelques instants.")
+        .speak("Je n'ai pas pu récupérer le signal rouge. Réessaie dans quelques instants.")
         .getResponse();
     }
   },
 };
 
-module.exports = { LireSignauxIntentHandler };
+module.exports = { AnnoncerSignalRougeIntentHandler };

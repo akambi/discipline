@@ -514,7 +514,8 @@ const OuiNonIntentHandler = {
     const sa     = h.attributesManager.getSessionAttributes();
     const intent = Alexa.getIntentName(h.requestEnvelope);
     return Alexa.getRequestType(h.requestEnvelope) === 'IntentRequest'
-      && (intent === 'AMAZON.YesIntent' || intent === 'AMAZON.NoIntent') && sa.bilan;
+      && (intent === 'AMAZON.YesIntent' || intent === 'AMAZON.NoIntent')
+      && sa.bilan && !sa.checkSignalRouge;
   },
   async handle(h) {
     const reponse = Alexa.getIntentName(h.requestEnvelope) === 'AMAZON.YesIntent';

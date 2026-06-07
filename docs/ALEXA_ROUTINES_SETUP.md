@@ -4,38 +4,66 @@
 
 Cinq routines pilotent les touchpoints Alexa du système Discipline :
 
-| Heure | Routine | Skill / Intent |
-|-------|---------|----------------|
-| 6h00  | Signal rouge du jour (LaunchRequest) | Skill **Signal Rouge** |
-| 9h30  | Check conversationnel | Skill **Bilan Immo** → `CheckSignalRougeIntent` |
-| 18h00 | Bilan de fin de journée | Skill **Bilan Immo** → `BilanSoirIntent` |
-| 21h00 | Signaux du lendemain (LaunchRequest) | Skill **Mes Signaux** |
-| Lun/Mer/Ven matin | Bilan hebdo / mensuel | Skill **Bilan Immo** → `LaunchRequest` |
+| Heure | Routine | Skill |
+|-------|---------|-------|
+| 6h00  | Signal rouge du jour (LaunchRequest) | **Discipline Signal Rouge** |
+| 9h30  | Check conversationnel oui/non | **Discipline Check Matin** |
+| 18h00 | Bilan de fin de journée | **Discipline Bilan Soir** |
+| 21h00 | Signaux du lendemain (LaunchRequest) | **Discipline Mes Signaux** |
+| Lun/Mer/Ven matin | Bilan hebdo / mensuel | **Bilan Immo** → `LaunchRequest` |
 
 ---
 
-## Nouveaux skills Alexa (création manuelle — console Alexa Developer)
+## Skills Alexa (création manuelle — console Alexa Developer)
 
-### Skill "Signal Rouge"
+Tous les skills pointent vers la même Lambda ARN (`alexa-coaching-immo-bilan-semaine`).
+Aucun intent custom nécessaire — seul `LaunchRequest` est utilisé pour les 4 skills discipline.
+
+### Skill "Discipline Signal Rouge"
 
 1. Alexa Developer Console → **Create Skill**
-2. **Skill name** : `Signal Rouge`
+2. **Skill name** : `Discipline Signal Rouge`
 3. **Primary locale** : French (CA)
 4. **Model** : Custom — **Hosting** : Provision your own
-5. **Invocation name** : `signal rouge`
-6. **Endpoint** → Lambda ARN : ARN de la Lambda Alexa existante (`discipline-alexa`)
+5. **Invocation name** : `discipline signal rouge`
+6. **Endpoint** → Lambda ARN : ARN de la Lambda Alexa existante
 7. **Build skill**
-8. Copier l'**Application ID** (`amzn1.ask.skill.XXX`) → variable d'env `SKILL_ID_SIGNAL_ROUGE`
+8. Copier l'**Application ID** → variable d'env `SKILL_ID_SIGNAL_ROUGE`
 
-> Aucun intent custom nécessaire — seul `LaunchRequest` est utilisé.
-
-### Skill "Mes Signaux"
+### Skill "Discipline Mes Signaux"
 
 Mêmes étapes avec :
-- **Skill name** : `Mes Signaux`
-- **Invocation name** : `mes signaux`
-- Même Lambda ARN
+- **Skill name** : `Discipline Mes Signaux`
+- **Invocation name** : `discipline mes signaux`
 - Application ID → variable d'env `SKILL_ID_MES_SIGNAUX`
+
+### Skill "Discipline Check Matin"
+
+Mêmes étapes avec :
+- **Skill name** : `Discipline Check Matin`
+- **Invocation name** : `discipline check matin`
+- Application ID → variable d'env `SKILL_ID_CHECK_MATIN`
+
+### Skill "Discipline Bilan Soir"
+
+Mêmes étapes avec :
+- **Skill name** : `Discipline Bilan Soir`
+- **Invocation name** : `discipline bilan soir`
+- Application ID → variable d'env `SKILL_ID_BILAN_SOIR`
+
+---
+
+## Variables d'environnement Lambda (complètes)
+
+```
+SKILL_ID_SIGNAL_ROUGE  = amzn1.ask.skill.XXX
+SKILL_ID_MES_SIGNAUX   = amzn1.ask.skill.XXX
+SKILL_ID_CHECK_MATIN   = amzn1.ask.skill.XXX   ← nouveau
+SKILL_ID_BILAN_SOIR    = amzn1.ask.skill.XXX   ← nouveau
+TABLE_SIGNAUX          = discipline_signaux_soir
+TABLE_PROFILS          = discipline_profils
+TABLE_TASKS            = discipline_tasks
+```
 
 ---
 
@@ -45,34 +73,34 @@ Mêmes étapes avec :
 
 **Actions :**
 1. Alexa dit → *"Il est 6 heures."*
-2. **Skills** → `Signal Rouge` → ouvrir le skill
+2. **Skills** → `Discipline Signal Rouge` → ouvrir le skill
 
 > Alexa lit uniquement le signal critique du jour via `handleSignalRouge()`. Pas de réponse attendue.
 
 ---
 
-## Routine 9h30 — Check conversationnel
+## Routine 9h30 — Check matin
 
-**Déclencheur :** Heure fixe — 9h30, tous les jours
+**Déclencheur :** Heure fixe — 9h30, lundi au vendredi
 
 **Actions :**
-1. Ouvrir le skill **Bilan Immo** → utterance : **"bilan du matin"**
+1. **Skills** → `Discipline Check Matin` → ouvrir le skill
 
-> Alexa pose la question sur le signal rouge et attend une réponse oui/non.
+> Alexa pose la question personnalisée sur le signal rouge et attend une réponse oui/non.
 > - **Oui** → "Bien. Continue."
 > - **Non** → Alexa cite l'objectif émotionnel du profil lié et relance.
 
 ---
 
-## Routine 18h00 — Bilan de fin de journée
+## Routine 18h00 — Bilan du soir
 
 **Déclencheur :** Heure fixe — 18h00, lundi au vendredi
 
 **Actions (dans l'ordre) :**
 1. Alexa dit → *"Il est 18 heures. C'est l'heure de clore ta journée."*
-2. Ouvrir le skill **Bilan Immo** → utterance : **"bilan du soir"**
+2. **Skills** → `Discipline Bilan Soir` → ouvrir le skill
 
-> Alexa lit les signaux du jour et pose une question Oui/Non par tâche.
+> Alexa pose les 3 questions de bilan une par une (oui/non par tâche).
 > - **Oui** → tâche marquée `done` dans `discipline_tasks`
 > - **Non** → tâche flaggée `reconduire: true` → signal rouge prioritaire le lendemain
 
@@ -88,18 +116,6 @@ Mêmes étapes avec :
 
 > Les signaux sont calculés par `discipline-pilotage-soir` à 20h et sauvegardés dans
 > `discipline_signaux_soir`. La routine 21h les lit directement via `handleMesSignaux()`.
-
----
-
-## Variables d'environnement Lambda
-
-Ajouter dans la configuration Lambda Alexa (`discipline-alexa` ou équivalent) :
-
-```
-TABLE_SIGNAUX = discipline_signaux_soir
-TABLE_PROFILS = discipline_profils
-TABLE_TASKS   = discipline_tasks
-```
 
 ---
 
@@ -124,7 +140,8 @@ aws dynamodb get-item \
   --region us-east-1
 
 # Tester dans Alexa Developer Console → Test
-# → "quels sont mes signaux"          (LireSignauxIntent)
-# → "ma priorité du jour"             (AnnoncerSignalRougeIntent)
-# → "bilan du matin" puis "oui"/"non" (CheckSignalRougeIntent)
+# → "ouvre discipline signal rouge"   → lit le signal rouge passif
+# → "ouvre discipline check matin"    → pose la question oui/non sur le signal rouge
+# → "ouvre discipline bilan soir"     → démarre le bilan avec la première tâche
+# → "ouvre discipline mes signaux"    → lit les 3 signaux du lendemain
 ```

@@ -34,6 +34,8 @@ const TABLE_SIGNAUX          = process.env.TABLE_SIGNAUX          || 'discipline
 const SKILL_ID_BILAN_IMMO   = process.env.SKILL_ID_BILAN_IMMO   || '';
 const SKILL_ID_SIGNAL_ROUGE = process.env.SKILL_ID_SIGNAL_ROUGE || '';
 const SKILL_ID_MES_SIGNAUX  = process.env.SKILL_ID_MES_SIGNAUX  || '';
+const SKILL_ID_CHECK_MATIN  = process.env.SKILL_ID_CHECK_MATIN  || '';
+const SKILL_ID_BILAN_SOIR   = process.env.SKILL_ID_BILAN_SOIR   || '';
 const TIMEZONE_OFFSET        = -4;
 const DUREE_COACHING_MOIS    = 18;
 const SCORE_MIN_VALIDE       = 2;
@@ -469,6 +471,101 @@ async function handleMesSignaux(h) {
   }
 }
 
+// ── Handler Check Matin (9h30) ───────────────────────────────────────────────
+async function handleCheckMatin(h) {
+  const userId = 'akambi'; // temporaire
+  const today  = getLocalDate(-4);
+
+  try {
+    const result = await ddb.send(new GetCommand({
+      TableName: TABLE_SIGNAUX,
+      Key: { userId, date: today },
+    }));
+
+    if (!result.Item?.signaux?.length) {
+      return h.responseBuilder
+        .speak("Pas de signaux pour aujourd'hui.")
+        .getResponse();
+    }
+
+    const signaux = result.Item.signaux;
+    const rouge   = signaux.find(s => s.signal === 'critique') || signaux[0];
+
+    const sa = h.attributesManager.getSessionAttributes();
+    sa.checkSignalRouge = {
+      taskId:    rouge.taskId,
+      content:   rouge.content,
+      profilLie: rouge.profilLie,
+    };
+    h.attributesManager.setSessionAttributes(sa);
+
+    const question = rouge.question
+      || `Ton signal rouge : ${rouge.content}. C'est fait ?`;
+
+    return h.responseBuilder
+      .speak(question)
+      .reprompt('Réponds par oui ou par non.')
+      .getResponse();
+
+  } catch (e) {
+    console.error('handleCheckMatin error:', e);
+    return h.responseBuilder
+      .speak("Je n'ai pas pu récupérer ton signal rouge.")
+      .getResponse();
+  }
+}
+
+// ── Handler Bilan du Soir (18h00) ────────────────────────────────────────────
+async function handleBilanSoir(h) {
+  const userId = 'akambi'; // temporaire
+  const today  = getLocalDate(-4);
+
+  try {
+    const result = await ddb.send(new GetCommand({
+      TableName: TABLE_SIGNAUX,
+      Key: { userId, date: today },
+    }));
+
+    if (!result.Item?.signaux?.length) {
+      return h.responseBuilder
+        .speak("Pas de signaux pour aujourd'hui. Capture d'abord des tâches avec ton raccourci Signal.")
+        .getResponse();
+    }
+
+    const signaux = result.Item.signaux.filter(s => s.taskId);
+
+    if (signaux.length === 0) {
+      return h.responseBuilder
+        .speak("Aucune tâche à valider pour aujourd'hui.")
+        .getResponse();
+    }
+
+    const sa = h.attributesManager.getSessionAttributes();
+    sa.bilanSoir = {
+      signaux,
+      currentIndex: 0,
+      reponses: [],
+      userId,
+    };
+    h.attributesManager.setSessionAttributes(sa);
+
+    const premier  = signaux[0];
+    const question = premier.question
+      || `As-tu complété cette tâche : ${premier.content} ?`;
+
+    return h.responseBuilder
+      .speak(`Bilan de la journée. ${question}`)
+      .reprompt('Réponds par oui ou par non.')
+      .getResponse();
+
+  } catch (e) {
+    console.error('handleBilanSoir error:', e);
+    return h.responseBuilder
+      .speak("Je n'ai pas pu démarrer le bilan du soir.")
+      .getResponse();
+  }
+}
+
 // ──────────────────────────────────────────────
 //  HANDLERS
 // ──────────────────────────────────────────────
@@ -483,6 +580,8 @@ const LaunchRequestHandler = {
       SKILL_ID_BILAN_IMMO,
       SKILL_ID_SIGNAL_ROUGE,
       SKILL_ID_MES_SIGNAUX,
+      SKILL_ID_CHECK_MATIN,
+      SKILL_ID_BILAN_SOIR,
     ].filter(Boolean);
 
     if (SKILL_IDS_AUTORISES.length > 0 && !SKILL_IDS_AUTORISES.includes(skillId)) {
@@ -491,6 +590,12 @@ const LaunchRequestHandler = {
 
     if (skillId === SKILL_ID_SIGNAL_ROUGE) return handleSignalRouge(h);
     if (skillId === SKILL_ID_MES_SIGNAUX)  return handleMesSignaux(h);
+
+    // ── Skill "discipline check matin" (9h30) ─────────────────────────────────
+    if (skillId === SKILL_ID_CHECK_MATIN) return handleCheckMatin(h);
+
+    // ── Skill "discipline bilan soir" (18h00) ─────────────────────────────────
+    if (skillId === SKILL_ID_BILAN_SOIR)  return handleBilanSoir(h);
 
     // ── Skill "bilan immo" — flow existant ────────────────────────────────
     const userId = h.requestEnvelope.session.user.userId;

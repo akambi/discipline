@@ -1,0 +1,6 @@
+{
+  "name": "signalrouge",
+  "version": "1",
+  "description": "Annonce le signal rouge (priorité absolue) du jour",
+  "inputs": []
+}

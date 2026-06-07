@@ -1,0 +1,6 @@
+{
+  "name": "messignaux",
+  "version": "1",
+  "description": "Lit les 3 signaux prioritaires du lendemain",
+  "inputs": []
+}

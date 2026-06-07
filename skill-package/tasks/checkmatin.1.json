@@ -1,0 +1,6 @@
+{
+  "name": "checkmatin",
+  "version": "1",
+  "description": "Vérifie si le signal rouge du jour a été complété",
+  "inputs": []
+}

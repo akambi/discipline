@@ -1,0 +1,76 @@
+{
+  "manifest": {
+    "manifestVersion": "1.0",
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "uri": "arn:aws:lambda:us-east-1:513316785187:function:alexa-coaching-immo-bilan-semaine"
+        },
+        "interfaces": [],
+        "locales": {},
+        "tasks": [
+          { "name": "messignaux",  "version": "1" },
+          { "name": "signalrouge", "version": "1" },
+          { "name": "checkmatin",  "version": "1" },
+          { "name": "bilansoir",   "version": "1" },
+          { "name": "recalculer",  "version": "1" }
+        ]
+      }
+    },
+    "privacyAndCompliance": {
+      "allowsPurchases": false,
+      "containsAds": false,
+      "isChildDirected": false,
+      "isExportCompliant": true,
+      "usesPersonalInfo": false,
+      "locales": {
+        "fr-CA": {},
+        "fr-FR": {}
+      },
+      "shoppingKit": {
+        "isAmazonAssociatesOnAlexaEnabled": false,
+        "isShoppingActionsEnabled": false
+      }
+    },
+    "publishingInformation": {
+      "category": "KNOWLEDGE_AND_TRIVIA",
+      "distributionMode": "PUBLIC",
+      "isAvailableWorldwide": true,
+      "distributionCountries": [],
+      "automaticDistribution": { "isActive": false },
+      "automaticClonedLocale": {
+        "locales": [{ "source": "fr-CA" }]
+      },
+      "locales": {
+        "fr-CA": {
+          "name": "Discipline Quotidienne",
+          "summary": "Votre coach quotidien de discipline et de priorisation personnelle.",
+          "description": "Discipline est votre assistant quotidien de coaching comportemental. Chaque jour, il vous annonce votre priorité absolue le matin, vérifie votre avancement en milieu de journée, et vous présente vos trois signaux prioritaires pour le lendemain le soir. Conçu pour les entrepreneurs qui veulent exécuter sans débat et rester alignés sur leurs objectifs à long terme.",
+          "examplePhrases": [
+            "Alexa, ouvre discipline quotidien",
+            "Alexa, demande à discipline quotidien mes signaux",
+            "Alexa, demande à discipline quotidien signal rouge"
+          ],
+          "keywords": [
+            "discipline", "productivité", "coaching",
+            "priorités", "objectifs", "entrepreneur", "organisation"
+          ]
+        },
+        "fr-FR": {
+          "name": "Discipline Quotidienne",
+          "summary": "Votre coach quotidien de discipline et de priorisation personnelle.",
+          "description": "Discipline est votre assistant quotidien de coaching comportemental. Chaque jour, il vous annonce votre priorité absolue le matin, vérifie votre avancement en milieu de journée, et vous présente vos trois signaux prioritaires pour le lendemain le soir. Conçu pour les entrepreneurs qui veulent exécuter sans débat et rester alignés sur leurs objectifs à long terme.",
+          "examplePhrases": [
+            "Alexa, ouvre discipline quotidien",
+            "Alexa, demande à discipline quotidien mes signaux",
+            "Alexa, demande à discipline quotidien signal rouge"
+          ],
+          "keywords": [
+            "discipline", "productivité", "coaching",
+            "priorités", "objectifs", "entrepreneur", "organisation"
+          ]
+        }
+      }
+    }
+  }
+}

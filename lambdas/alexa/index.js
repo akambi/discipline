@@ -563,6 +563,58 @@ async function handleBilanSoir(h) {
   }
 }
 
+// ── Handler Recalculer (à la demande) ────────────────────────────────────────
+async function handleRecalculer(h) {
+  const userId = 'akambi';
+
+  try {
+    const { LambdaClient, InvokeCommand } = require('@aws-sdk/client-lambda');
+    const lambdaClient = new LambdaClient({ region: process.env.DYNAMODB_REGION || 'us-east-1' });
+
+    await lambdaClient.send(new InvokeCommand({
+      FunctionName: process.env.PILOTAGE_SOIR_FUNCTION || 'discipline-pilotage-soir',
+      InvocationType: 'Event',
+      Payload: JSON.stringify({ userId }),
+    }));
+
+    return h.responseBuilder
+      .speak("Je recalcule tes priorités. Elles seront prêtes dans quelques instants. Redemande-moi tes signaux dans 30 secondes.")
+      .getResponse();
+
+  } catch (e) {
+    console.error('handleRecalculer error:', e);
+    return h.responseBuilder
+      .speak("Je n'ai pas pu lancer le recalcul. Réessaie dans quelques instants.")
+      .getResponse();
+  }
+}
+
+// ── Custom Task Handler ──────────────────────────────────────────────────────
+const TaskHandler = {
+  canHandle(h) {
+    return Alexa.getRequestType(h.requestEnvelope) === 'LaunchRequest'
+      && h.requestEnvelope.request.task != null;
+  },
+  async handle(h) {
+    const task     = h.requestEnvelope.request.task;
+    const taskName = task.name?.split('.').pop();
+
+    console.log(`TaskHandler invoked: ${taskName}`);
+
+    switch (taskName) {
+      case 'messignaux':  return handleMesSignaux(h);
+      case 'signalrouge': return handleSignalRouge(h);
+      case 'checkmatin':  return handleCheckMatin(h);
+      case 'bilansoir':   return handleBilanSoir(h);
+      case 'recalculer':  return handleRecalculer(h);
+      default:
+        return h.responseBuilder
+          .speak("Tâche non reconnue.")
+          .getResponse();
+    }
+  }
+};
+
 // ──────────────────────────────────────────────
 //  HANDLERS
 // ──────────────────────────────────────────────
@@ -903,6 +955,7 @@ const ErrorHandler = {
 
 exports.handler = Alexa.SkillBuilders.custom()
   .addRequestHandlers(
+    TaskHandler,
     LaunchRequestHandler,
     ObjectifIntentHandler,
     LireSignauxIntentHandler,

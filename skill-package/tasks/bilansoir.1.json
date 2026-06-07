@@ -1,0 +1,6 @@
+{
+  "name": "bilansoir",
+  "version": "1",
+  "description": "Bilan de fin de journée — valide les 3 signaux un par un",
+  "inputs": []
+}

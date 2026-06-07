@@ -37,6 +37,20 @@ Trois routines pilotent les touchpoints Alexa du système Discipline :
 
 ---
 
+## Routine 18h00 — Bilan de fin de journée
+
+**Déclencheur :** Heure fixe — 18h00, lundi au vendredi
+
+**Actions (dans l'ordre) :**
+1. Alexa dit → *"Il est 18 heures. C'est l'heure de clore ta journée."*
+2. Ouvrir le skill **Bilan Immo** → utterance : **"bilan du soir"**
+
+> Alexa lit les signaux du jour et pose une question Oui/Non par tâche.
+> - **Oui** → tâche marquée `done` dans `discipline_tasks`
+> - **Non** → tâche flaggée `reconduire: true` → signal rouge prioritaire le lendemain
+
+---
+
 ## Routine 21h00 — Signaux du lendemain (modifier l'existante)
 
 **Déclencheur :** Heure fixe — 21h00, tous les jours

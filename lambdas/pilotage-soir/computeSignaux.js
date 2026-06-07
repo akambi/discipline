@@ -23,6 +23,8 @@ Pour chaque tâche, attribue un signal :
 - important : lié à non-négociable secondaire OU impact financier élevé
 - opportunite : action rapide à fort levier, pas urgente
 
+Les tâches avec reconduire:true doivent être classées en signal critique en priorité absolue, avant toute autre tâche, quelle que soit leur ancienneté.
+
 Réponds UNIQUEMENT en JSON (tableau de 3 éléments) :
 [
   {
@@ -31,9 +33,16 @@ Réponds UNIQUEMENT en JSON (tableau de 3 éléments) :
     "signal": "critique|important|opportunite",
     "raison": "...",
     "profilLie": "...",
-    "nonNegociableLie": "..."
+    "nonNegociableLie": "...",
+    "question": "As-tu [action concrète] ?"
   }
 ]
+
+Règles pour le champ "question" :
+- Courte, directe, en français
+- Formulation Oui/Non (commence par "As-tu" ou "Est-ce que tu as")
+- Nomme la tâche concrètement (jamais "ta tâche critique")
+- Exemple : si content est "Envoyer la facture Allaux avant demain 10h", question est "As-tu envoyé la facture Allaux ?"
 
 Tâches actives : ${JSON.stringify(tasksActives)}`;
 

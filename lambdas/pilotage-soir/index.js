@@ -19,9 +19,9 @@ async function getActiveTasks(userId) {
   const res = await ddb.send(new QueryCommand({
     TableName: TABLE_TASKS,
     KeyConditionExpression: 'userId = :uid',
-    FilterExpression: '#s = :active',
+    FilterExpression: '#s = :active OR reconduire = :true',
     ExpressionAttributeNames: { '#s': 'status' },
-    ExpressionAttributeValues: { ':uid': userId, ':active': 'active' },
+    ExpressionAttributeValues: { ':uid': userId, ':active': 'active', ':true': true },
   }));
   return res.Items || [];
 }

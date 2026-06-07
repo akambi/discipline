@@ -19,6 +19,7 @@ const { DynamoDBDocumentClient, GetCommand, PutCommand } = require('@aws-sdk/lib
 const { LireSignauxIntentHandler }                                                              = require('./intents/LireSignauxIntent');
 const { AnnoncerSignalRougeIntentHandler }                                                      = require('./intents/AnnoncerSignalRougeIntent');
 const { CheckSignalRougeIntentHandler, CheckSignalRougeOuiHandler, CheckSignalRougeNonHandler } = require('./intents/CheckSignalRougeIntent');
+const { BilanSoirIntentHandler, BilanSoirOuiHandler, BilanSoirNonHandler }                    = require('./intents/BilanSoirIntent');
 
 // ──────────────────────────────────────────────
 //  ⚙️  CONFIG
@@ -713,6 +714,9 @@ exports.handler = Alexa.SkillBuilders.custom()
     CheckSignalRougeIntentHandler,
     CheckSignalRougeOuiHandler,
     CheckSignalRougeNonHandler,
+    BilanSoirIntentHandler,
+    BilanSoirOuiHandler,
+    BilanSoirNonHandler,
     OuiNonIntentHandler,
     NombreIntentHandler,
     PasserIntentHandler,

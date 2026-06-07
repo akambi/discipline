@@ -20,7 +20,7 @@ const { LireSignauxIntentHandler }                                              
 const { AnnoncerSignalRougeIntentHandler }                                                      = require('./intents/AnnoncerSignalRougeIntent');
 const { CheckSignalRougeIntentHandler, CheckSignalRougeOuiHandler, CheckSignalRougeNonHandler } = require('./intents/CheckSignalRougeIntent');
 const { BilanSoirIntentHandler, BilanSoirOuiHandler, BilanSoirNonHandler }                    = require('./intents/BilanSoirIntent');
-const { getLocalDate }                                                                          = require('./utils');
+const { getLocalDate, getHeureLocale }                                                          = require('./utils');
 
 // ──────────────────────────────────────────────
 //  ⚙️  CONFIG
@@ -32,10 +32,7 @@ const TABLE_USERS            = process.env.DYNAMO_TABLE           || 'coaching-i
 const TABLE_MESSAGES         = process.env.DYNAMO_MESSAGES_TABLE  || 'coaching-immo-discipline-messages';
 const TABLE_SIGNAUX          = process.env.TABLE_SIGNAUX          || 'discipline_signaux_soir';
 const SKILL_ID_BILAN_IMMO   = process.env.SKILL_ID_BILAN_IMMO   || '';
-const SKILL_ID_SIGNAL_ROUGE = process.env.SKILL_ID_SIGNAL_ROUGE || '';
-const SKILL_ID_MES_SIGNAUX  = process.env.SKILL_ID_MES_SIGNAUX  || '';
-const SKILL_ID_CHECK_MATIN  = process.env.SKILL_ID_CHECK_MATIN  || '';
-const SKILL_ID_BILAN_SOIR   = process.env.SKILL_ID_BILAN_SOIR   || '';
+const SKILL_ID_DISCIPLINE   = process.env.SKILL_ID_DISCIPLINE   || '';
 const TIMEZONE_OFFSET        = -4;
 const DUREE_COACHING_MOIS    = 18;
 const SCORE_MIN_VALIDE       = 2;
@@ -578,24 +575,26 @@ const LaunchRequestHandler = {
 
     const SKILL_IDS_AUTORISES = [
       SKILL_ID_BILAN_IMMO,
-      SKILL_ID_SIGNAL_ROUGE,
-      SKILL_ID_MES_SIGNAUX,
-      SKILL_ID_CHECK_MATIN,
-      SKILL_ID_BILAN_SOIR,
+      SKILL_ID_DISCIPLINE,
     ].filter(Boolean);
 
     if (SKILL_IDS_AUTORISES.length > 0 && !SKILL_IDS_AUTORISES.includes(skillId)) {
       return h.responseBuilder.speak('Skill non autorisé.').getResponse();
     }
 
-    if (skillId === SKILL_ID_SIGNAL_ROUGE) return handleSignalRouge(h);
-    if (skillId === SKILL_ID_MES_SIGNAUX)  return handleMesSignaux(h);
+    // ── Skill "discipline" — routing par heure ────────────────────────────
+    if (skillId === SKILL_ID_DISCIPLINE) {
+      const heure = getHeureLocale(-4);
 
-    // ── Skill "discipline check matin" (9h30) ─────────────────────────────────
-    if (skillId === SKILL_ID_CHECK_MATIN) return handleCheckMatin(h);
+      if (heure >= 6  && heure < 9)  return handleSignalRouge(h);
+      if (heure >= 9  && heure < 17) return handleCheckMatin(h);
+      if (heure >= 17 && heure < 20) return handleBilanSoir(h);
+      if (heure >= 20)               return handleMesSignaux(h);
 
-    // ── Skill "discipline bilan soir" (18h00) ─────────────────────────────────
-    if (skillId === SKILL_ID_BILAN_SOIR)  return handleBilanSoir(h);
+      return h.responseBuilder
+        .speak("Il est trop tôt. Va dormir, Akambi.")
+        .getResponse();
+    }
 
     // ── Skill "bilan immo" — flow existant ────────────────────────────────
     const userId = h.requestEnvelope.session.user.userId;

@@ -2,67 +2,55 @@
 
 ## Vue d'ensemble
 
-Cinq routines pilotent les touchpoints Alexa du système Discipline :
+Un seul skill **"Discipline"** gère les 4 plages horaires du système.
+Le `LaunchRequestHandler` route automatiquement selon l'heure locale de Montréal (UTC-4).
 
-| Heure | Routine | Skill |
-|-------|---------|-------|
-| 6h00  | Signal rouge du jour (LaunchRequest) | **Discipline Signal Rouge** |
-| 9h30  | Check conversationnel oui/non | **Discipline Check Matin** |
-| 18h00 | Bilan de fin de journée | **Discipline Bilan Soir** |
-| 21h00 | Signaux du lendemain (LaunchRequest) | **Discipline Mes Signaux** |
-| Lun/Mer/Ven matin | Bilan hebdo / mensuel | **Bilan Immo** → `LaunchRequest` |
+| Heure locale Montréal | Comportement | Handler |
+|-----------------------|--------------|---------|
+| 06h00 – 08h59 | Signal rouge passif — annonce la priorité du jour | `handleSignalRouge` |
+| 09h00 – 16h59 | Check conversationnel — "As-tu fait [tâche] ?" oui/non | `handleCheckMatin` |
+| 17h00 – 19h59 | Bilan du soir — 3 questions oui/non sur les tâches | `handleBilanSoir` |
+| 20h00 – 23h59 | Lecture des 3 signaux du lendemain | `handleMesSignaux` |
+| 00h00 – 05h59 | Message par défaut — "Il est trop tôt, va dormir." | — |
+
+| Jours Lun/Mer/Ven matin | Bilan hebdo / mensuel | **Bilan Immo** → `LaunchRequest` |
 
 ---
 
-## Skills Alexa (création manuelle — console Alexa Developer)
+## Skill Alexa (création manuelle — console Alexa Developer)
 
-Tous les skills pointent vers la même Lambda ARN (`alexa-coaching-immo-bilan-semaine`).
-Aucun intent custom nécessaire — seul `LaunchRequest` est utilisé pour les 4 skills discipline.
+Le skill pointe vers la même Lambda ARN (`alexa-coaching-immo-bilan-semaine`).
+Aucun intent custom nécessaire — uniquement `LaunchRequest` est utilisé.
 
-### Skill "Discipline Signal Rouge"
+### Skill "Discipline"
 
 1. Alexa Developer Console → **Create Skill**
-2. **Skill name** : `Discipline Signal Rouge`
+2. **Skill name** : `Discipline`
 3. **Primary locale** : French (CA)
-4. **Model** : Custom — **Hosting** : Provision your own
-5. **Invocation name** : `discipline signal rouge`
+4. **Model** : Custom → **Hosting** : Provision your own
+5. **Invocation name** : `discipline`
 6. **Endpoint** → Lambda ARN : ARN de la Lambda Alexa existante
 7. **Build skill**
-8. Copier l'**Application ID** → variable d'env `SKILL_ID_SIGNAL_ROUGE`
-
-### Skill "Discipline Mes Signaux"
-
-Mêmes étapes avec :
-- **Skill name** : `Discipline Mes Signaux`
-- **Invocation name** : `discipline mes signaux`
-- Application ID → variable d'env `SKILL_ID_MES_SIGNAUX`
-
-### Skill "Discipline Check Matin"
-
-Mêmes étapes avec :
-- **Skill name** : `Discipline Check Matin`
-- **Invocation name** : `discipline check matin`
-- Application ID → variable d'env `SKILL_ID_CHECK_MATIN`
-
-### Skill "Discipline Bilan Soir"
-
-Mêmes étapes avec :
-- **Skill name** : `Discipline Bilan Soir`
-- **Invocation name** : `discipline bilan soir`
-- Application ID → variable d'env `SKILL_ID_BILAN_SOIR`
+8. Copier l'**Application ID** → variable d'env `SKILL_ID_DISCIPLINE`
 
 ---
 
 ## Variables d'environnement Lambda (complètes)
 
 ```
-SKILL_ID_SIGNAL_ROUGE  = amzn1.ask.skill.XXX
-SKILL_ID_MES_SIGNAUX   = amzn1.ask.skill.XXX
-SKILL_ID_CHECK_MATIN   = amzn1.ask.skill.XXX   ← nouveau
-SKILL_ID_BILAN_SOIR    = amzn1.ask.skill.XXX   ← nouveau
+SKILL_ID_DISCIPLINE    = amzn1.ask.skill.XXX   ← nouveau skill unique
+SKILL_ID_BILAN_IMMO    = amzn1.ask.skill.XXX
 TABLE_SIGNAUX          = discipline_signaux_soir
 TABLE_PROFILS          = discipline_profils
 TABLE_TASKS            = discipline_tasks
+```
+
+Variables supprimées :
+```
+# SKILL_ID_SIGNAL_ROUGE  ← supprimée
+# SKILL_ID_MES_SIGNAUX   ← supprimée
+# SKILL_ID_CHECK_MATIN   ← supprimée
+# SKILL_ID_BILAN_SOIR    ← supprimée
 ```
 
 ---
@@ -72,10 +60,9 @@ TABLE_TASKS            = discipline_tasks
 **Déclencheur :** Heure fixe — 6h00, tous les jours
 
 **Actions :**
-1. Alexa dit → *"Il est 6 heures."*
-2. **Skills** → `Discipline Signal Rouge` → ouvrir le skill
+1. **Skills** → `Discipline` → ouvrir le skill
 
-> Alexa lit uniquement le signal critique du jour via `handleSignalRouge()`. Pas de réponse attendue.
+> Heure 6h → `handleSignalRouge()` — Alexa lit uniquement le signal critique du jour. Pas de réponse attendue.
 
 ---
 
@@ -84,9 +71,9 @@ TABLE_TASKS            = discipline_tasks
 **Déclencheur :** Heure fixe — 9h30, lundi au vendredi
 
 **Actions :**
-1. **Skills** → `Discipline Check Matin` → ouvrir le skill
+1. **Skills** → `Discipline` → ouvrir le skill
 
-> Alexa pose la question personnalisée sur le signal rouge et attend une réponse oui/non.
+> Heure 9h → `handleCheckMatin()` — Alexa pose la question personnalisée sur le signal rouge et attend une réponse oui/non.
 > - **Oui** → "Bien. Continue."
 > - **Non** → Alexa cite l'objectif émotionnel du profil lié et relance.
 
@@ -98,9 +85,9 @@ TABLE_TASKS            = discipline_tasks
 
 **Actions (dans l'ordre) :**
 1. Alexa dit → *"Il est 18 heures. C'est l'heure de clore ta journée."*
-2. **Skills** → `Discipline Bilan Soir` → ouvrir le skill
+2. **Skills** → `Discipline` → ouvrir le skill
 
-> Alexa pose les 3 questions de bilan une par une (oui/non par tâche).
+> Heure 17h → `handleBilanSoir()` — Alexa pose les 3 questions de bilan une par une (oui/non par tâche).
 > - **Oui** → tâche marquée `done` dans `discipline_tasks`
 > - **Non** → tâche flaggée `reconduire: true` → signal rouge prioritaire le lendemain
 
@@ -112,25 +99,32 @@ TABLE_TASKS            = discipline_tasks
 
 **Actions (modifier la routine existante) :**
 1. *(Garder)* Message texte existant sur le coucher
-2. **Skills** → `Mes Signaux` → ouvrir le skill
+2. **Skills** → `Discipline` → ouvrir le skill
 
-> Les signaux sont calculés par `discipline-pilotage-soir` à 20h et sauvegardés dans
-> `discipline_signaux_soir`. La routine 21h les lit directement via `handleMesSignaux()`.
+> Heure 20h → `handleMesSignaux()` — Les signaux calculés à 20h par `discipline-pilotage-soir` sont lus depuis `discipline_signaux_soir`.
 
 ---
 
-## Mise à jour du message 21h
+## Test avec FORCE_HEURE
 
-Exécuter une seule fois pour mettre à jour le message dans DynamoDB :
+La variable d'env `FORCE_HEURE` permet de tester chaque plage sans attendre la bonne heure :
 
-```bash
-cd seeds
-node update-message-21h.js
+```
+FORCE_HEURE=7   → teste signal rouge   (06h-08h)
+FORCE_HEURE=10  → teste check matin    (09h-16h)
+FORCE_HEURE=18  → teste bilan soir     (17h-19h)
+FORCE_HEURE=21  → teste mes signaux    (20h-23h)
 ```
 
+**Dans Alexa Developer Console → Test :**
+1. Ajouter `FORCE_HEURE=7` dans les variables d'env Lambda
+2. "ouvre discipline" → lit le signal rouge passif
+3. Changer `FORCE_HEURE=10` → "ouvre discipline" → check matin
+4. Retirer `FORCE_HEURE` avant la mise en production
+
 ---
 
-## Test manuel
+## Test manuel DynamoDB
 
 ```bash
 # Vérifier les signaux du jour dans DynamoDB
@@ -140,8 +134,8 @@ aws dynamodb get-item \
   --region us-east-1
 
 # Tester dans Alexa Developer Console → Test
-# → "ouvre discipline signal rouge"   → lit le signal rouge passif
-# → "ouvre discipline check matin"    → pose la question oui/non sur le signal rouge
-# → "ouvre discipline bilan soir"     → démarre le bilan avec la première tâche
-# → "ouvre discipline mes signaux"    → lit les 3 signaux du lendemain
+# → "ouvre discipline" à 6h   → lit le signal rouge passif
+# → "ouvre discipline" à 9h30 → pose la question oui/non sur le signal rouge
+# → "ouvre discipline" à 18h  → démarre le bilan avec la première tâche
+# → "ouvre discipline" à 21h  → lit les 3 signaux du lendemain
 ```

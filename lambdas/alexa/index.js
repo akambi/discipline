@@ -20,6 +20,7 @@ const { LireSignauxIntentHandler }                                              
 const { AnnoncerSignalRougeIntentHandler }                                                      = require('./intents/AnnoncerSignalRougeIntent');
 const { CheckSignalRougeIntentHandler, CheckSignalRougeOuiHandler, CheckSignalRougeNonHandler } = require('./intents/CheckSignalRougeIntent');
 const { BilanSoirIntentHandler, BilanSoirOuiHandler, BilanSoirNonHandler }                    = require('./intents/BilanSoirIntent');
+const { getLocalDate }                                                                          = require('./utils');
 
 // ──────────────────────────────────────────────
 //  ⚙️  CONFIG
@@ -29,6 +30,10 @@ const MAKE_SAVE_MENSUEL_URL  = process.env.MAKE_SAVE_MENSUEL_URL  || 'https://ho
 const MAKE_DEACTIVATION_URL  = process.env.MAKE_DEACTIVATION_URL  || 'https://hook.eu2.make.com/zy45y8frvlnc2ygd4xa1zjmd6n9lgw4x';
 const TABLE_USERS            = process.env.DYNAMO_TABLE           || 'coaching-immo-users';
 const TABLE_MESSAGES         = process.env.DYNAMO_MESSAGES_TABLE  || 'coaching-immo-discipline-messages';
+const TABLE_SIGNAUX          = process.env.TABLE_SIGNAUX          || 'discipline_signaux_soir';
+const SKILL_ID_BILAN_IMMO   = process.env.SKILL_ID_BILAN_IMMO   || '';
+const SKILL_ID_SIGNAL_ROUGE = process.env.SKILL_ID_SIGNAL_ROUGE || '';
+const SKILL_ID_MES_SIGNAUX  = process.env.SKILL_ID_MES_SIGNAUX  || '';
 const TIMEZONE_OFFSET        = -4;
 const DUREE_COACHING_MOIS    = 18;
 const SCORE_MIN_VALIDE       = 2;
@@ -394,6 +399,77 @@ async function fetchPrenom(apiEndpoint, token) {
 }
 
 // ──────────────────────────────────────────────
+//  HANDLER SIGNAL ROUGE (6h)
+// ──────────────────────────────────────────────
+async function handleSignalRouge(h) {
+  const userId = 'akambi'; // temporaire
+  const today  = getLocalDate(-4);
+
+  try {
+    const result = await ddb.send(new GetCommand({
+      TableName: TABLE_SIGNAUX,
+      Key: { userId, date: today },
+    }));
+
+    if (!result.Item?.signaux?.length) {
+      return h.responseBuilder
+        .speak("Pas de signaux pour aujourd'hui. Capture des tâches avec ton raccourci Signal.")
+        .getResponse();
+    }
+
+    const signaux = result.Item.signaux;
+    const rouge   = signaux.find(s => s.signal === 'critique') || signaux[0];
+
+    return h.responseBuilder
+      .speak(`Ton signal rouge aujourd'hui : ${rouge.content}. C'est ta priorité absolue.`)
+      .getResponse();
+  } catch (e) {
+    console.error('handleSignalRouge error:', e);
+    return h.responseBuilder
+      .speak("Je n'ai pas pu récupérer ton signal rouge.")
+      .getResponse();
+  }
+}
+
+// ──────────────────────────────────────────────
+//  HANDLER MES SIGNAUX (21h)
+// ──────────────────────────────────────────────
+async function handleMesSignaux(h) {
+  const userId = 'akambi'; // temporaire
+  const today  = getLocalDate(-4);
+
+  try {
+    const result = await ddb.send(new GetCommand({
+      TableName: TABLE_SIGNAUX,
+      Key: { userId, date: today },
+    }));
+
+    if (!result.Item?.signaux?.length) {
+      return h.responseBuilder
+        .speak("Tes signaux pour demain ne sont pas encore prêts. Réessaie après 20 heures.")
+        .getResponse();
+    }
+
+    const signaux  = result.Item.signaux;
+    const labels   = { critique: 'rouge', important: 'orange', opportunite: 'vert' };
+    const ordinals = ['Premier', 'Deuxième', 'Troisième'];
+
+    let speech = 'Voici tes trois signaux pour demain. ';
+    signaux.forEach((s, i) => {
+      const couleur = labels[s.signal] || s.signal;
+      speech += `${ordinals[i] || ''} signal ${couleur} : ${s.content}. `;
+    });
+
+    return h.responseBuilder.speak(speech).getResponse();
+  } catch (e) {
+    console.error('handleMesSignaux error:', e);
+    return h.responseBuilder
+      .speak("Je n'ai pas pu récupérer tes signaux.")
+      .getResponse();
+  }
+}
+
+// ──────────────────────────────────────────────
 //  HANDLERS
 // ──────────────────────────────────────────────
 
@@ -401,6 +477,22 @@ const LaunchRequestHandler = {
   canHandle(h) { return Alexa.getRequestType(h.requestEnvelope) === 'LaunchRequest'; },
 
   async handle(h) {
+    const skillId = h.requestEnvelope.session.application.applicationId;
+
+    const SKILL_IDS_AUTORISES = [
+      SKILL_ID_BILAN_IMMO,
+      SKILL_ID_SIGNAL_ROUGE,
+      SKILL_ID_MES_SIGNAUX,
+    ].filter(Boolean);
+
+    if (SKILL_IDS_AUTORISES.length > 0 && !SKILL_IDS_AUTORISES.includes(skillId)) {
+      return h.responseBuilder.speak('Skill non autorisé.').getResponse();
+    }
+
+    if (skillId === SKILL_ID_SIGNAL_ROUGE) return handleSignalRouge(h);
+    if (skillId === SKILL_ID_MES_SIGNAUX)  return handleMesSignaux(h);
+
+    // ── Skill "bilan immo" — flow existant ────────────────────────────────
     const userId = h.requestEnvelope.session.user.userId;
     const profil = await getProfil(userId);
 

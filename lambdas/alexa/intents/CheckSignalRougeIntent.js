@@ -94,7 +94,7 @@ const CheckSignalRougeNonHandler = {
   },
 
   async handle(h) {
-    const userId = h.requestEnvelope.session.user.userId;
+    const userId = 'akambi'; // temporaire pour test
     const sa     = h.attributesManager.getSessionAttributes();
     const { profilLie } = sa.checkSignalRouge;
     sa.checkSignalRouge = null;

@@ -22,7 +22,7 @@ const CheckSignalRougeIntentHandler = {
   },
 
   async handle(h) {
-    const userId = h.requestEnvelope.session.user.userId;
+    const userId = 'akambi'; // temporaire pour test
     const today  = getLocalDate();
 
     try {

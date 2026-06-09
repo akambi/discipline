@@ -953,6 +953,16 @@ const ErrorHandler = {
   },
 };
 
+const RecalculerIntentHandler = {
+  canHandle(h) {
+    return Alexa.getRequestType(h.requestEnvelope) === 'IntentRequest'
+      && Alexa.getIntentName(h.requestEnvelope) === 'RecalculerIntent';
+  },
+  async handle(h) {
+    return handleRecalculer(h);
+  }
+};
+
 exports.handler = Alexa.SkillBuilders.custom()
   .addRequestHandlers(
     TaskHandler,
@@ -966,6 +976,7 @@ exports.handler = Alexa.SkillBuilders.custom()
     BilanSoirIntentHandler,
     BilanSoirOuiHandler,
     BilanSoirNonHandler,
+    RecalculerIntentHandler,
     OuiNonIntentHandler,
     NombreIntentHandler,
     PasserIntentHandler,

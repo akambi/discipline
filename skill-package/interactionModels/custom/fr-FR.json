@@ -11,6 +11,7 @@
                 {"name":"AnnoncerSignalRougeIntent","slots":[],"samples":["quel est mon signal rouge","ma priorité du jour","ma tâche la plus importante aujourd'hui"]},
                 {"name":"CheckSignalRougeIntent","slots":[],"samples":["check signal rouge","vérifier mon signal rouge","bilan du matin"]},
                 {"name":"BilanSoirIntent","slots":[],"samples":["bilan du soir","bilan de la journée","faire le bilan","valider mes tâches","clore la journée","fermer la journée"]},
+                {"name":"RecalculerIntent","slots":[],"samples":["recalcule mes priorités","recalculer mes priorités","recalcule mes signaux","nouvelles priorités","mets à jour mes signaux","rafraîchis mes signaux","recalcule"]},
                 {"name":"AMAZON.YesIntent","samples":["oui","yes","ouais","bien sûr","absolument","tout à fait","c'est fait","affirmatif","ok","exact","correct","oui c'est fait","oui bien sûr","oui c'est ça","oui j'ai fait","oui je l'ai fait"]},
                 {"name":"AMAZON.NoIntent","samples":["non","no","pas vraiment","pas encore","négatif","nan","nope","pas du tout","non pas encore","je n'ai pas","non je n'ai pas","pas fait","non pas fait"]},
                 {"name":"AMAZON.HelpIntent","samples":["aide","aide moi","help","je ne comprends pas","répète la question","quelle est la question"]},

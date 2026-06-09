@@ -1,6 +1,29 @@
 {
-  "name": "messignaux",
-  "version": "1",
-  "description": "Lit les 3 signaux prioritaires du lendemain",
-  "inputs": []
+  "openapi": "3.0.0",
+  "info": {
+    "title": "messignaux",
+    "version": "1"
+  },
+  "paths": {
+    "/messignaux": {
+      "post": {
+        "summary": "Execute messignaux",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    }
+  }
 }

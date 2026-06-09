@@ -1,0 +1,15 @@
+{
+  "askcliStatesVersion": "2020-03-31",
+  "profiles": {
+    "default": {
+      "skillId": "amzn1.ask.skill.c77f6e1a-efe7-4740-aa34-6fafdb31ca4c",
+      "deploymentStatus": "COMPLETE",
+      "skillMetadata": {
+        "lastImportId": "amzn1.ask-package.import.b4cbee85-8fe5-4382-a1b2-b6919837ebdd",
+        "lastImportTimestamp": "2026-06-07T13:00:47.281Z",
+        "lastDeployHash": "fkneg+3F0sW1wafng8CjpvnJttI=",
+        "lastDeployType": "interaction-model"
+      }
+    }
+  }
+}

@@ -1,6 +1,29 @@
 {
-  "name": "recalculer",
-  "version": "1",
-  "description": "Recalcule les priorités du lendemain immédiatement",
-  "inputs": []
+  "openapi": "3.0.0",
+  "info": {
+    "title": "recalculer",
+    "version": "1"
+  },
+  "paths": {
+    "/recalculer": {
+      "post": {
+        "summary": "Execute recalculer",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    }
+  }
 }

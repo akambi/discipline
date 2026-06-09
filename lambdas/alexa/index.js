@@ -623,7 +623,7 @@ const LaunchRequestHandler = {
   canHandle(h) { return Alexa.getRequestType(h.requestEnvelope) === 'LaunchRequest'; },
 
   async handle(h) {
-    const skillId = h.requestEnvelope.session.application.applicationId;
+    const skillId = h.requestEnvelope.session?.application?.applicationId || '';
 
     const SKILL_IDS_AUTORISES = [
       SKILL_ID_BILAN_IMMO,

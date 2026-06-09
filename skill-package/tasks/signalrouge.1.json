@@ -1,6 +1,29 @@
 {
-  "name": "signalrouge",
-  "version": "1",
-  "description": "Annonce le signal rouge (priorité absolue) du jour",
-  "inputs": []
+  "openapi": "3.0.0",
+  "info": {
+    "title": "signalrouge",
+    "version": "1"
+  },
+  "paths": {
+    "/signalrouge": {
+      "post": {
+        "summary": "Execute signalrouge",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    }
+  }
 }

@@ -1,6 +1,29 @@
 {
-  "name": "bilansoir",
-  "version": "1",
-  "description": "Bilan de fin de journée — valide les 3 signaux un par un",
-  "inputs": []
+  "openapi": "3.0.0",
+  "info": {
+    "title": "bilansoir",
+    "version": "1"
+  },
+  "paths": {
+    "/bilansoir": {
+      "post": {
+        "summary": "Execute bilansoir",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    }
+  }
 }

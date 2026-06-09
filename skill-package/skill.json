@@ -9,11 +9,26 @@
         "interfaces": [],
         "locales": {},
         "tasks": [
-          { "name": "messignaux",  "version": "1" },
-          { "name": "signalrouge", "version": "1" },
-          { "name": "checkmatin",  "version": "1" },
-          { "name": "bilansoir",   "version": "1" },
-          { "name": "recalculer",  "version": "1" }
+          {
+            "name": "amzn1.ask.skill.c77f6e1a-efe7-4740-aa34-6fafdb31ca4c.messignaux",
+            "version": "1"
+          },
+          {
+            "name": "amzn1.ask.skill.c77f6e1a-efe7-4740-aa34-6fafdb31ca4c.signalrouge",
+            "version": "1"
+          },
+          {
+            "name": "amzn1.ask.skill.c77f6e1a-efe7-4740-aa34-6fafdb31ca4c.checkmatin",
+            "version": "1"
+          },
+          {
+            "name": "amzn1.ask.skill.c77f6e1a-efe7-4740-aa34-6fafdb31ca4c.bilansoir",
+            "version": "1"
+          },
+          {
+            "name": "amzn1.ask.skill.c77f6e1a-efe7-4740-aa34-6fafdb31ca4c.recalculer",
+            "version": "1"
+          }
         ]
       }
     },
@@ -37,37 +52,49 @@
       "distributionMode": "PUBLIC",
       "isAvailableWorldwide": true,
       "distributionCountries": [],
-      "automaticDistribution": { "isActive": false },
+      "automaticDistribution": {
+        "isActive": false
+      },
       "automaticClonedLocale": {
-        "locales": [{ "source": "fr-CA" }]
+        "locales": [
+          {
+            "source": "fr-CA"
+          }
+        ]
       },
       "locales": {
         "fr-CA": {
           "name": "Discipline Quotidienne",
           "summary": "Votre coach quotidien de discipline et de priorisation personnelle.",
-          "description": "Discipline est votre assistant quotidien de coaching comportemental. Chaque jour, il vous annonce votre priorité absolue le matin, vérifie votre avancement en milieu de journée, et vous présente vos trois signaux prioritaires pour le lendemain le soir. Conçu pour les entrepreneurs qui veulent exécuter sans débat et rester alignés sur leurs objectifs à long terme.",
+          "description": "Discipline est votre assistant quotidien de coaching comportemental.",
           "examplePhrases": [
             "Alexa, ouvre discipline quotidien",
             "Alexa, demande à discipline quotidien mes signaux",
             "Alexa, demande à discipline quotidien signal rouge"
           ],
           "keywords": [
-            "discipline", "productivité", "coaching",
-            "priorités", "objectifs", "entrepreneur", "organisation"
+            "discipline",
+            "productivite",
+            "coaching",
+            "priorites",
+            "objectifs"
           ]
         },
         "fr-FR": {
           "name": "Discipline Quotidienne",
           "summary": "Votre coach quotidien de discipline et de priorisation personnelle.",
-          "description": "Discipline est votre assistant quotidien de coaching comportemental. Chaque jour, il vous annonce votre priorité absolue le matin, vérifie votre avancement en milieu de journée, et vous présente vos trois signaux prioritaires pour le lendemain le soir. Conçu pour les entrepreneurs qui veulent exécuter sans débat et rester alignés sur leurs objectifs à long terme.",
+          "description": "Discipline est votre assistant quotidien de coaching comportemental.",
           "examplePhrases": [
             "Alexa, ouvre discipline quotidien",
             "Alexa, demande à discipline quotidien mes signaux",
             "Alexa, demande à discipline quotidien signal rouge"
           ],
           "keywords": [
-            "discipline", "productivité", "coaching",
-            "priorités", "objectifs", "entrepreneur", "organisation"
+            "discipline",
+            "productivite",
+            "coaching",
+            "priorites",
+            "objectifs"
           ]
         }
       }

@@ -10,8 +10,9 @@ const TABLE_USERS    = process.env.TABLE_USERS     || 'coaching-immo-users';
 
 const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({ region: REGION }));
 
-function getLocalDate(timezoneOffset = 0) {
+function getNextLocalDate(timezoneOffset = 0) {
   const local = new Date(Date.now() + timezoneOffset * 3600 * 1000);
+  local.setUTCDate(local.getUTCDate() + 1); // +1 jour
   return local.toISOString().slice(0, 10);
 }
 
@@ -51,7 +52,7 @@ async function processUser(userId, timezoneOffset = 0) {
   const secondaire = profils.find(p => p.priorite === 2) || null;
 
   const signaux = await computeSignaux(dominant, secondaire, tasks);
-  const date    = getLocalDate(timezoneOffset);
+  const date = getNextLocalDate(timezoneOffset);
 
   await ddb.send(new PutCommand({
     TableName: TABLE_SIGNAUX,

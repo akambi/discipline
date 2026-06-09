@@ -1,6 +1,29 @@
 {
-  "name": "checkmatin",
-  "version": "1",
-  "description": "Vérifie si le signal rouge du jour a été complété",
-  "inputs": []
+  "openapi": "3.0.0",
+  "info": {
+    "title": "checkmatin",
+    "version": "1"
+  },
+  "paths": {
+    "/checkmatin": {
+      "post": {
+        "summary": "Execute checkmatin",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    }
+  }
 }
